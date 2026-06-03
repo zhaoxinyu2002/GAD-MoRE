@@ -1,0 +1,22 @@
+Method,ACM,Amazon,BlogCatalog,citeseer,cora,Facebook,weibo,AVG_AP
+GAD-MoRE,0.3717±0.0007,0.3155±0.0484,0.3531±0.0042,0.4015±0.0131,0.4525±0.0088,0.0900±0.0112,0.6026±0.0030,0.3696
+
+Parameters:
+trials: 5
+model: GAD-MoRE
+shot: 10
+json_dir: ./params
+eps: 0.004
+unsupervised: True
+scorer_type: moe
+router_type: expert_memory
+run_experiment: main
+gate_temperature: 0.7
+gate_noise_type: gumbel
+gate_noise_std: 0.0
+contrastive_weight: 0.1
+w_embed: 1.0
+w_feature: 0.5
+w_structure: 0.1
+w_gate: 0.01
+data_dir: ../data/  

@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+.pytest_cache/
+.ipynb_checkpoints/
+
+results/
+
+# Generated preprocessed dataset caches
+data/*_processed_dim32.pt
