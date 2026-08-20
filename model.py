@@ -438,7 +438,7 @@ class AnomalyScorerMoE(nn.Module):
         )
 
         if original_feature_dim is None:
-            raise ValueError("必须提供 original_feature_dim 用于特征重构。")
+            raise ValueError("original_feature_dim is required for feature reconstruction.")
         self.feature_decoder = nn.Linear(embedding_dim, original_feature_dim)
 
     def _apply_noise(self, logits):

@@ -109,7 +109,9 @@ def feat_alignment(X, edges, dims):
     all_features = [euclidean_final] + hyperbolic_features_list
     final_features = torch.cat(all_features, dim=1)
 
-    print(f"特征维度分配 - 欧式: {euclidean_dims}, 双曲: {hyperbolic_dims}×4, 总计: {final_features.shape[1]}")
+    print(
+        f"Feature split - Euclidean: {euclidean_dims}, hyperbolic: {hyperbolic_dims}x4, total: {final_features.shape[1]}"
+    )
 
     return final_features
 
@@ -142,7 +144,7 @@ def max_message(feature, adj_matrix):
     return -torch.sum(message), message
 
 class Dataset:
-    def __init__(self, dims, name="cora", prefix="../data/"):
+    def __init__(self, dims, name="cora", prefix="./data/"):
         self.name = name
         self.dims = dims
         self.prefix = prefix
@@ -188,7 +190,7 @@ class Dataset:
             _, message = self.compute_max_message()
 
         except Exception as e:
-            print(f"计算 max_message 时出错: {e}")
+            print(f"Failed to compute max_message: {e}")
 
     def propagated(self, k, device: str | torch.device | None = None):
         x = self.feat if device is None else self.feat.to(device)
@@ -211,9 +213,7 @@ def read_json(model, shot, json_dir):
             try:
                 return json.load(file)
             except json.JSONDecodeError as e:
-                print(f"解码JSON文件 {filename} 时出错: {e}")
-    else:
-        print(f"未找到JSON文件 {filename}。")
+                print(f"Failed to decode JSON file {filename}: {e}")
     return None
 
 def save_results_to_csv(auc_mean_dict, auc_std_dict, pre_mean_dict, pre_std_dict, datasets_test, args, dims):
@@ -254,7 +254,7 @@ def save_results_to_csv(auc_mean_dict, auc_std_dict, pre_mean_dict, pre_std_dict
     write_to_file(df_auc, auc_csv_path)
     write_to_file(df_ap, ap_csv_path)
 
-    print(f"AUC 结果已保存至 {auc_csv_path}")
+    print(f"AUC results saved to {auc_csv_path}")
     print(df_auc)
-    print(f"AP 结果已保存至 {ap_csv_path}")
+    print(f"AP results saved to {ap_csv_path}")
     print(df_ap)

@@ -2,7 +2,7 @@ import argparse
 import warnings
 import os
 
-os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
+os.environ.setdefault("PYTORCH_CUDA_ALLOC_CONF", "expandable_segments:True")
 import random
 import numpy as np
 import pandas as pd
@@ -13,7 +13,11 @@ from train_test import GADMoREDetector
 
 warnings.filterwarnings("ignore")
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+
+def resolve_device(device_arg: str) -> str:
+    if device_arg == "auto":
+        return "cuda" if torch.cuda.is_available() else "cpu"
+    return device_arg
 
 def set_seed(seed):
     random.seed(seed)
@@ -28,7 +32,7 @@ def set_seed(seed):
 def load_config(args, dims):
     model_config = read_json(args.model, args.shot, args.json_dir)
     if model_config is None:
-        print("使用默认模型配置。")
+        print("Using the default model configuration.")
         model_config = {
             "in_feats": dims,
             "h_feats": 1024,
@@ -50,7 +54,7 @@ def load_config(args, dims):
         model_config["gate_noise_std"] = args.gate_noise_std
         model_config["memory_size"] = args.memory_size
     else:
-        print("使用已保存的最佳模型配置。")
+        print("Using the saved model configuration.")
         model_config["scorer_type"] = "moe"
         model_config["in_feats"] = dims
         if "init_curvs" not in model_config:
@@ -66,63 +70,72 @@ def load_config(args, dims):
 
 def main():
     parser = argparse.ArgumentParser(description="GAD-MoRE - Anomaly Detection")
-    parser.add_argument("--trials", type=int, default=5, help="实验重复次数")
-    parser.add_argument("--model", type=str, default="GAD-MoRE", help="模型名称")
+    parser.add_argument("--trials", type=int, default=5, help="Number of repeated trials")
+    parser.add_argument("--model", type=str, default="GAD-MoRE", help="Model name")
     parser.add_argument(
-        "--shot", type=int, default=10, help="Few-shot setting中的shot数量"
+        "--shot", type=int, default=10, help="Unused few-shot argument kept for config lookup"
     )
     parser.add_argument(
-        "--json_dir", type=str, default="./params", help="存放超参数配置的JSON文件目录"
+        "--json_dir",
+        type=str,
+        default="./params",
+        help="Optional JSON hyperparameter directory; missing files fall back to defaults",
     )
     parser.add_argument(
-        "--dims", type=int, default=32, help="输入特征维度（各数据集向量维度）"
+        "--dims", type=int, default=32, help="Aligned input feature dimension"
     )
     parser.add_argument("--eps", type=float, default=4e-3, help="Epsilon for infmatrix")
     parser.add_argument(
         "--unsupervised",
         action="store_true",
         default=True,
-        help="使用无监督训练进行零样本检测",
+        help="Use unsupervised training for zero-shot detection",
+    )
+    parser.add_argument(
+        "--device",
+        type=str,
+        default="auto",
+        help="Device to use: auto, cpu, cuda, or cuda:N",
     )
 
     parser.add_argument(
         "--gate_temperature",
         type=float,
         default=0.7,
-        help="门控softmax温度（仅在top-k内）",
+        help="Gating softmax temperature (within top-k)",
     )
     parser.add_argument(
         "--gate_noise_type",
         type=str,
         default="gumbel",
         choices=["none", "gaussian", "gumbel"],
-        help="门控噪声类型（训练期）",
+        help="Gating noise type during training",
     )
     parser.add_argument(
         "--gate_noise_std",
         type=float,
         default=0.0,
-        help="门控高斯噪声标准差（仅当 noise_type=gaussian 时生效）",
+        help="Gating Gaussian noise std when noise_type=gaussian",
     )
 
     parser.add_argument(
-        "--contrastive_weight", type=float, default=0.1, help="对比损失权重"
+        "--contrastive_weight", type=float, default=0.1, help="Contrastive loss weight"
     )
 
-    parser.add_argument("--w_embed", type=float, default=1.0, help="嵌入重构损失权重")
-    parser.add_argument("--w_feature", type=float, default=0.5, help="特征重构损失权重")
+    parser.add_argument("--w_embed", type=float, default=1.0, help="Embedding reconstruction loss weight")
+    parser.add_argument("--w_feature", type=float, default=0.5, help="Feature reconstruction loss weight")
     parser.add_argument(
-        "--w_structure", type=float, default=0.1, help="结构重构(BCE)损失权重"
+        "--w_structure", type=float, default=0.1, help="Structure reconstruction (BCE) loss weight"
     )
-    parser.add_argument("--w_gate", type=float, default=0.01, help="记忆路由器熵正则损失权重")
-    parser.add_argument("--w_message", type=float, default=1.0, help="max_message 损失权重 (默认关闭)")
-    parser.add_argument("--memory_size", type=int, default=32, help="专家记忆库容量（每个专家的最大记忆条目数）")
+    parser.add_argument("--w_gate", type=float, default=0.01, help="Memory-router entropy regularization weight")
+    parser.add_argument("--w_message", type=float, default=1.0, help="max_message loss weight")
+    parser.add_argument("--memory_size", type=int, default=32, help="Expert memory capacity per expert")
 
     parser.add_argument(
         "--data_dir",
         type=str,
-        default="../data/",
-        help="数据集 .mat 文件所在目录（以 / 结尾）",
+        default="./data/",
+        help="Directory containing dataset .mat files",
     )
     args = parser.parse_args()
     datasets_test = [
@@ -137,12 +150,13 @@ def main():
     datasets_train = ["pubmed", "Flickr", "Reddit", "YelpChi"]
     dims = args.dims
 
-    print(f"在 {len(datasets_train)} 个数据集上进行训练: {datasets_train}")
-    print(f"在 {len(datasets_test)} 个数据集上进行测试: {datasets_test}")
-    print("使用主线配置: scorer=moe, router=expert_memory")
+    device = resolve_device(args.device)
+    print(f"Training on {len(datasets_train)} source graphs: {datasets_train}")
+    print(f"Evaluating on {len(datasets_test)} unseen target graphs: {datasets_test}")
+    print(f"Using device={device}, scorer=moe, router=expert_memory")
 
     train_config = {
-        "device": "cuda:0" if torch.cuda.is_available() else "cpu",
+        "device": device,
         "epochs": 40,
         "testdsets": datasets_test,
         "lr": 5e-5,
@@ -170,7 +184,7 @@ def main():
     for t in range(args.trials):
         seed = t
         set_seed(seed)
-        print(f"模型 {args.model}, 第 {seed} 次实验")
+        print(f"Model {args.model}, trial {seed}")
         train_config["seed"] = seed
 
         data = {"train": data_train, "test": data_test}
@@ -183,8 +197,8 @@ def main():
                 pre_dict[test_data_name] = []
             auc_dict[test_data_name].append(test_score["AUROC"])
             pre_dict[test_data_name].append(test_score["AUPRC"])
-            print(f"测试集 {test_data_name}, AUROC: {auc_dict[test_data_name]}")
-            print(f"测试集 {test_data_name}, AUPRC: {pre_dict[test_data_name]}")
+            print(f"Target {test_data_name}, AUROC: {auc_dict[test_data_name]}")
+            print(f"Target {test_data_name}, AUPRC: {pre_dict[test_data_name]}")
 
     auc_mean_dict, auc_std_dict, pre_mean_dict, pre_std_dict = {}, {}, {}, {}
     for test_data_name in auc_dict:
@@ -199,7 +213,7 @@ def main():
             f"AUPRC:{pre_mean_dict[test_data_name]:.4f}±{pre_std_dict[test_data_name]:.4f}"
         )
         print("-" * 50 + test_data_name + "-" * 50)
-        print(f"结果: {str_result}")
+        print(f"Result: {str_result}")
 
     save_results_to_csv(
         auc_mean_dict,

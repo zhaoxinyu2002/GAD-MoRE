@@ -79,7 +79,7 @@ class GADMoREDetector:
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
 
-        print(f"完成 {self.train_config['epochs']} 个周期的训练！")
+        print(f"Finished {self.train_config['epochs']} training epochs.")
         return self.evaluate()
 
     def evaluate(self):

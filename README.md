@@ -1,180 +1,156 @@
-# GAD-MoRE: Zero-shot Generalizable Graph Anomaly Detection with Mixture of Riemannian Experts
+# [ICDM 2026] GAD-MoRE
 
-This repository contains the implementation of **GAD-MoRE**, a zero-shot generalizable graph anomaly detection framework based on a **Mixture of Riemannian Experts**.
+**Zero-shot Generalizable Graph Anomaly Detection with Mixture of Riemannian Experts**
 
-## Abstract
+Paper: [arXiv:2602.06859](https://arxiv.org/abs/2602.06859).
 
-Graph Anomaly Detection (GAD) aims to identify irregular patterns in graph data, and recent works have explored zero-shot generalist GAD to enable generalization to unseen graph datasets. However, existing zero-shot GAD methods largely ignore intrinsic geometric differences across diverse anomaly patterns, substantially limiting their cross-domain generalization. In this work, we reveal that anomaly detectability is highly dependent on the underlying geometric properties and that embedding graphs from different domains into a single static curvature space can distort the structural signatures of anomalies. To address the challenge that a single curvature space cannot capture geometry-dependent graph anomaly patterns, we propose **GAD-MoRE**, a novel framework for zero-shot Generalizable Graph Anomaly Detection with a Mixture of Riemannian Experts architecture. Specifically, to ensure that each anomaly pattern is modeled in the Riemannian space where it is most detectable, GAD-MoRE employs a set of specialized Riemannian expert networks, each operating in a distinct curvature space. To align raw node features with curvature-specific anomaly characteristics, we introduce an anomaly-aware multi-curvature feature alignment module that projects inputs into parallel Riemannian spaces, enabling the capture of diverse geometric characteristics. Finally, to facilitate better generalization beyond seen patterns, we design a memory-based dynamic router that adaptively assigns each input to the most compatible expert based on historical reconstruction performance on similar anomalies. Extensive experiments in the zero-shot setting demonstrate that GAD-MoRE significantly outperforms state-of-the-art generalist GAD baselines.
+Authors: Xinyu Zhao, Qingyun Sun, Jiayi Luo, Xingcheng Fu, Jianxin Li.
 
-## Highlights
+This repository contains the implementation of **GAD-MoRE**, a zero-shot generalizable graph anomaly detection framework built around a **Mixture of Riemannian Experts (MoRE)**.
 
-- **Zero-shot cross-domain GAD** without target-domain training, validation, or fine-tuning.
-- **Mixture of Riemannian Experts** for modeling geometry-dependent anomaly patterns.
-- **Anomaly-aware multi-curvature feature alignment** for constructing geometry-aware node representations.
-- **Memory-based dynamic router** for reconstruction-quality-aware expert selection.
-- **End-to-end training and evaluation code** for AUROC/AUPRC reporting over multiple trials.
+![GAD-MoRE framework](assets/framework.png)
+
+## Overview
+
+GAD-MoRE targets zero-shot cross-graph anomaly detection, where a model is trained on source graphs and directly evaluated on unseen target graphs without target-domain training or fine-tuning.
+
+The implementation contains three main components:
+
+1. **Anomaly-aware Multi-curvature Feature Alignment (MCFA)**: constructs an aligned topology-aware input representation through parallel manifold mapping, dimensionality reduction, and Laplacian feature selection.
+2. **Mixture of Riemannian Experts Scorer**: reconstructs node embeddings with specialized Riemannian expert networks whose curvature parameters are learnable.
+3. **Memory-based Dynamic Router (MDR)**: combines adaptive exploration with reconstruction-history-based expert memories for expert selection.
 
 ## Repository Structure
 
 ```text
 GAD-MoRE/
-├── main.py              # main training and evaluation entry
-├── model.py             # GAD-MoRE model, Riemannian experts, MoE scorer, memory router
-├── train_test.py        # trainer and evaluator
-├── utils.py             # dataset loading, preprocessing, metrics, and result saving
-├── data/                # place graph datasets here
-├── params/              # optional hyperparameter JSON files
-├── checkpoints/         # saved model checkpoints
-├── results/             # CSV result files
+├── LICENSE
+├── main.py
+├── model.py
+├── train_test.py
+├── utils.py
+├── requirements.txt
+├── assets/
+│   └── framework.png
+├── data/
+│   ├── README.md
+│   └── *.mat
+├── results32/
+│   ├── 32_multitrain_GAD-MoRE_AUC.csv
+│   └── 32_multitrain_GAD-MoRE_AP.csv
 └── README.md
-````
+```
 
-## Method Overview
-
-GAD-MoRE contains three main components:
-
-1. **Anomaly-aware Multi-curvature Feature Alignment**: projects raw node features into multiple curvature-aware spaces and constructs unified node representations.
-2. **Mixture of Riemannian Experts Scorer**: uses multiple Riemannian expert networks with learnable curvatures to reconstruct node embeddings.
-3. **Memory-based Dynamic Router**: routes nodes to suitable experts according to historical reconstruction quality.
+The four Python source files are the frozen implementation corresponding to the released experimental code. The reference result CSVs are preserved under `results32/`.
 
 ## Environment
 
-A typical environment is:
+A typical environment uses Python 3.9+ and the following packages:
 
 ```bash
-python >= 3.9
-pytorch
-torch-geometric
-geoopt
-numpy
-scipy
-pandas
-scikit-learn
+pip install -r requirements.txt
 ```
 
-Install the main dependencies with:
+For CUDA-enabled PyTorch / PyTorch Geometric, install the builds matching your CUDA environment if the default pip installation is not appropriate for your system. The code uses the first visible GPU when CUDA is available (`--device auto`). Select a GPU with `CUDA_VISIBLE_DEVICES` rather than editing the source.
 
-```bash
-pip install torch torch-geometric geoopt numpy scipy pandas scikit-learn tqdm
-```
+## Data
 
-## Data Preparation
+The benchmark `.mat` files are included under [`data/`](data/). See [`data/README.md`](data/README.md) for the expected filenames.
 
-Place all `.mat` graph datasets under `./data/`.
+Expected datasets:
 
-Expected file structure:
-
-```text
-data/
-├── pubmed.mat
-├── Flickr.mat
-├── Reddit.mat
-├── YelpChi.mat
-├── ACM.mat
-├── Amazon.mat
-├── BlogCatalog.mat
-├── citeseer.mat
-├── cora.mat
-├── Facebook.mat
-└── weibo.mat
-```
-
-Each `.mat` file should contain:
-
-* `Network`: adjacency matrix
-* `Attributes`: node attributes
-* `Label` or `gnd`: anomaly labels
-
-The first run will automatically preprocess raw `.mat` files and cache processed files such as:
-
-```text
-data/ACM_processed_dim32.pt
-```
-
-## Training and Evaluation
-
-Run the default zero-shot experiment:
-
-```bash
-python main.py --data_dir ./data/ --trials 5
-```
-
-By default, the model is trained on four source graphs:
+**Source graphs**
 
 ```text
 pubmed, Flickr, Reddit, YelpChi
 ```
 
-and evaluated on seven unseen target graphs:
+**Unseen target graphs**
 
 ```text
 ACM, Amazon, BlogCatalog, citeseer, cora, Facebook, weibo
 ```
 
-Target labels are used only for evaluation.
+Target anomaly labels are used only for evaluation.
 
-## Main Options
+## Training and Evaluation
 
-```bash
-python main.py \
-  --data_dir ./data/ \
-  --trials 5 \
-  --dims 32 \
-  --gate_temperature 0.7 \
-  --contrastive_weight 0.1 \
-  --w_embed 1.0 \
-  --w_feature 0.5 \
-  --w_structure 0.1 \
-  --w_gate 0.01
-```
-
-## Save and Load Checkpoints
-
-Save trained models:
+From the repository root, run:
 
 ```bash
-python main.py --data_dir ./data/ --trials 5 --save_model
+python main.py --trials 5
 ```
 
-Load a saved checkpoint for evaluation:
+This command is the paper setting. The released code does not require a `params/` JSON file; if that directory is absent, `main.py` uses the default model configuration below.
 
-```bash
-python main.py \
-  --data_dir ./data/ \
-  --load_model_path checkpoints/GAD-MoRE_seed0.pth
-```
-
-## Outputs
-
-The code reports AUROC and AUPRC for each target dataset and saves CSV results under:
+The main experimental settings used by the release include:
 
 ```text
-results/
+feature dimension: 32
+number of experts: 5
+top-k experts: 2
+gate temperature: 0.7
+training epochs: 40
+learning rate: 5e-5
+weight decay: 5e-5
 ```
 
-Example output files:
+Additional command-line options are available through:
 
-```text
-results/32_multitrain_GAD-MoRE_AUC.csv
-results/32_multitrain_GAD-MoRE_AP.csv
+```bash
+python main.py --help
 ```
 
-## Notes
+## Results
 
-* The paper refers to the method as **GAD-MoRE**. The implementation now uses GAD-MoRE naming consistently.
-* The default setting follows zero-shot cross-domain evaluation.
-* The first run may be slower because feature alignment and dataset caching are performed.
-* If visualization utilities are used, please include `visualization.py`; otherwise, visualization-related code can be ignored.
+The released reference CSVs report the following averages over the seven unseen target graphs:
+
+
+| Metric | Average |
+| ------ | ------- |
+| AUROC  | 0.8209  |
+| AUPRC  | 0.3696  |
+
+
+Per-dataset values and standard deviations are available in `results32/`.
+
+New runs are written to the `results/` directory by `utils.py`.
+
+## Reproducibility Notes
+
+- Random seeds are set for Python, NumPy, and PyTorch for each trial (`seed = trial index`).
+- The default experiment uses five trials.
+- The same model configuration is used across all unseen target datasets without target-domain validation or fine-tuning.
+- Benchmark `.mat` files are released under `data/`. Preprocessed feature caches created locally in `data/` are ignored by Git.
+
+## Acknowledgements
+
+Our implementation is built upon the official code of [ARC](https://github.com/yixinliu233/ARC) (Liu et al., NeurIPS 2024). We thank the authors for releasing their code.
+
+```bibtex
+@inproceedings{liu2024arc,
+  title={ARC: A Generalist Graph Anomaly Detector with In-Context Learning},
+  author={Liu, Yixin and Li, Shiyuan and Zheng, Yu and Chen, Qingfeng and Zhang, Chengqi and Pan, Shirui},
+  booktitle={Advances in Neural Information Processing Systems},
+  year={2024}
+}
+```
+
+## License
+
+This repository is released under the [MIT License](LICENSE).
 
 ## Citation
 
-If you use this codebase in your research, please cite our paper:
+If you use this code, please cite our paper:
 
 ```bibtex
-@inproceedings{gadmore2026,
-  title     = {Zero-shot Generalizable Graph Anomaly Detection with Mixture of Riemannian Experts},
-  author    = {Anonymous Authors},
-  booktitle = {Proceedings of the IEEE International Conference on Data Mining},
-  year      = {2026}
+@article{zhao2026gadmore,
+  title={Zero-shot Generalizable Graph Anomaly Detection with Mixture of Riemannian Experts},
+  author={Zhao, Xinyu and Sun, Qingyun and Luo, Jiayi and Fu, Xingcheng and Li, Jianxin},
+  journal={arXiv preprint arXiv:2602.06859},
+  year={2026}
 }
 ```
+
+The IEEE proceedings BibTeX will replace the preprint entry after the ICDM 2026 publication metadata is available.

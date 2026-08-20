@@ -1,11 +1,18 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
 .pytest_cache/
 .ipynb_checkpoints/
+.DS_Store
 
+# Generated results and caches
 results/
+data/*_processed_dim*.pt
 
-# Generated preprocessed dataset caches
-data/*_processed_dim32.pt
+# Optional local experiment artifacts
+checkpoints/
+*.pth
+*.pt
+
+# Keep the public data instructions tracked
+!data/README.md
