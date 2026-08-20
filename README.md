@@ -1,6 +1,4 @@
-# [ICDM 2026] GAD-MoRE
-
-## Zero-shot Generalizable Graph Anomaly Detection with Mixture of Riemannian Experts
+# [ICDM 2026] Zero-shot Generalizable Graph Anomaly Detection with Mixture of Riemannian Experts
 
 Paper: [arXiv:2602.06859](https://arxiv.org/abs/2602.06859).
 
