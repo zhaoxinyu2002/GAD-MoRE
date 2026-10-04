@@ -48,9 +48,9 @@ is the same embedding-reconstruction distance used by the release. Setting
 the model. The reference CSV parameter blocks do not record `w_message`.
 These observations motivate a controlled comparison; the CSVs alone do not
 prove the exact historical execution provenance. A five-trial run with
-`--w_message 0` is still running in the isolated pinned A100 environment.
-Its metrics have not been inspected or included here. Until it finishes, do
-not treat `--w_message 0` as a verified way to recover the reference row.
+`--w_message 0` was launched in the isolated pinned A100 environment, but
+its outcome has not been retrieved and verified. Do not treat
+`--w_message 0` as a verified way to recover the reference row.
 
 ## Completed baseline measurements
 
