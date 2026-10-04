@@ -1,7 +1,10 @@
-torch
-torch-geometric
-geoopt
-numpy
-scipy
-pandas
-scikit-learn
+# Linux x86_64 / Python 3.11.6, CUDA 12.1 PyTorch wheel.
+--extra-index-url https://download.pytorch.org/whl/cu121
+torch==2.4.0+cu121
+torch-geometric==2.6.1
+geoopt==0.5.0
+numpy==1.26.4
+scipy==1.12.0
+pandas==2.2.3
+scikit-learn==1.6.1
+
