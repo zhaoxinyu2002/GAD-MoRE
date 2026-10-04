@@ -41,16 +41,16 @@ The release defaults to `--w_message 1.0`. This adds a sum of neighborhood
 similarities to the training objective via `max_message`. It is separate
 from the embedding, feature, structure, and router-entropy loss weights.
 
-An archived `GRACE+pre` implementation retaining the same reference CSV
-values does not contain this additional training loss. Its test-time score
-is the same embedding-reconstruction distance used by the release. Setting
-`--w_message 0` disables the added term in the released code without editing
-the model. The reference CSV parameter blocks do not record `w_message`.
-These observations motivate a controlled comparison; the CSVs alone do not
-prove the exact historical execution provenance. A five-trial run with
+An archived `GRACE+pre` implementation associated with the same reference
+CSV values does not contain this additional training loss. Its training
+entry point never passes `w_message` to the model, so the added term is
+disabled. Its test-time score is the same embedding-reconstruction distance
+used by the release. Setting `--w_message 0` therefore restores the
+historical objective without editing model code. The reference CSV parameter
+blocks do not record `w_message`, so source history is the evidence for this
+setting, not a parameter recorded alongside the CSV. A five-trial run with
 `--w_message 0` was launched in the isolated pinned A100 environment, but
-its outcome has not been retrieved and verified. Do not treat
-`--w_message 0` as a verified way to recover the reference row.
+its outcome has not been retrieved and verified.
 
 ## Completed baseline measurements
 
@@ -87,12 +87,12 @@ export OMP_NUM_THREADS=1
 export OPENBLAS_NUM_THREADS=1
 export MKL_NUM_THREADS=1
 
-# Released default training objective
-CUDA_VISIBLE_DEVICES=0 python -u main.py --trials 5 --w_message 1
-
-# Historical objective without the added message loss
-# Save the preceding results elsewhere before running this in the same directory.
+# Historical training objective from the archived implementation
 CUDA_VISIBLE_DEVICES=0 python -u main.py --trials 5 --w_message 0
+
+# Released default objective (the three-seed audit averaged 0.7711 / 0.2852)
+# Save the preceding results elsewhere before running this in the same directory.
+CUDA_VISIBLE_DEVICES=0 python -u main.py --trials 5 --w_message 1
 ```
 
 Thread limits avoid excessive CPU threading on shared machines; record the

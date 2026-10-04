@@ -97,10 +97,10 @@ Target anomaly labels are used only for evaluation.
 From the repository root, run:
 
 ```bash
-python main.py --trials 5
+python main.py --trials 5 --w_message 0
 ```
 
-This command runs five trials with the released defaults. If `params/` is absent, `main.py` uses the default model configuration below. The release default also enables the `max_message` training loss with weight 1.0. The reference CSVs do not record that weight, and this default run did not match the reference averages in the environment audit; see [`docs/reproducibility.md`](docs/reproducibility.md) before treating this command as an exact reproduction of the reported row.
+Use `--w_message 0` for the historical training objective: the archived training entry point associated with the reference results did not pass the later-added `max_message` loss to the model. The released code defaults to `--w_message 1.0`; this change alone produced substantially lower results in the environment audit. If `params/` is absent, `main.py` uses the default model configuration below. See [`docs/reproducibility.md`](docs/reproducibility.md) for the evidence and the status of the five-trial verification.
 
 The main experimental settings used by the release include:
 
