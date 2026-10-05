@@ -128,7 +128,7 @@ def main():
         "--w_structure", type=float, default=0.1, help="Structure reconstruction (BCE) loss weight"
     )
     parser.add_argument("--w_gate", type=float, default=0.01, help="Memory-router entropy regularization weight")
-    parser.add_argument("--w_message", type=float, default=1.0, help="max_message loss weight")
+    parser.add_argument("--w_message", type=float, default=0.0, help="max_message loss weight")
     parser.add_argument("--memory_size", type=int, default=32, help="Expert memory capacity per expert")
 
     parser.add_argument(
