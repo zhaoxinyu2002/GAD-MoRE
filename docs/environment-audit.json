@@ -1,0 +1,229 @@
+{
+  "released_revision": "658b023764db2387a01f7180b4c1d9303e97e9e5",
+  "archived_variant": "GRACE+pre",
+  "core_versions": {
+    "python": "3.11.6",
+    "torch": "2.4.0+cu121",
+    "torch-geometric": "2.6.1",
+    "geoopt": "0.5.0",
+    "numpy": "1.26.4",
+    "scipy": "1.12.0",
+    "pandas": "2.2.3",
+    "scikit-learn": "1.6.1"
+  },
+  "reproduction_gpu": "NVIDIA A100-SXM4-80GB",
+  "driver_version": "580.65.06",
+  "thread_limits": {
+    "OMP_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1,
+    "MKL_NUM_THREADS": 1
+  },
+  "released_source_sha256": {
+    "main.py": "02295d3a1da546ad42d25463431865fea8c873fe733c386cf479b21695f26adc",
+    "model.py": "f8608f5094ca48e117e17d010bd47c54cbb70846b70d6bb78acc55e108e3b22d",
+    "utils.py": "1b016b5ab3d263c6c75544c0d4df260f5472fb749d5535b0ff5dc031e826299e",
+    "train_test.py": "d8985b2f3b1446efbb39683febd9422db95ad7111704f703d71de325d8a285cb"
+  },
+  "archived_source_sha256": {
+    "main.py": "937eab7a95853840c872590aa770ea41179cc4312024d1d53508c47eee32bc40",
+    "model.py": "1c8ada9a5f40cc107722c56e678ed368bb1d51ab1f28f83359e80706f5fb70d3",
+    "utils.py": "221c72a7ee1be6e9d13f550f8348243c0570489bd118ed198ca4546108951405",
+    "train_test.py": "92d64da98146b3c7b92e24f563a87132769374bbd353477a22bd6ea2a383e23a"
+  },
+  "dataset_sha256": {
+    "ACM.mat": "31833bd23c8fa8d3aa3358876ebea43cf77d03fb4068f2a3b73b3d7dda2b6e98",
+    "Amazon.mat": "6677b4f17f594c4169df3717fc9da9c6b06d1dfcc28e5f0d42beedf4c7843dd3",
+    "BlogCatalog.mat": "3f47bf201e9fb162850a71f6e7e1cf536ecac126a987611f2d914e9ea7220f94",
+    "citeseer.mat": "62c63c8d397f420abec6d61b3e648cc71aeb38f2269d4d15902cec4607d7a031",
+    "cora.mat": "e04ba2e2360e2ef9025e9b39ded115d7c5a4fa45386229584a96126e37efea42",
+    "Facebook.mat": "606d8cce2f9a9d2829244f5691d1abf0c3a5e0f28a2ade25a7ca7df304184163",
+    "Flickr.mat": "c6cef6086a41286f0c12e0779292572ccc165cb796f05d3f939b1d3ddc652379",
+    "pubmed.mat": "e2136111c3479c755786c01f84c6b96d383952e9f21ed26f9c3a8a2faa9778fa",
+    "Reddit.mat": "533a739caa38939dff51f1902e6705fbb4e727badf1d408fc0d1b45467cf4fd3",
+    "weibo.mat": "63c1ffdfc3b40c05010f30dc3599e8322dc202b879382a5d6e3529f46b0744e7",
+    "YelpChi.mat": "61eae7fd894b54840eb7038d52bbf9e3802704ccd16a74526dd2fff3cbff72ca"
+  },
+  "same_stack_code_comparison": {
+    "model": {
+      "keys_equal": true,
+      "all_parameters_equal": true
+    },
+    "datasets": [
+      {
+        "dataset": "pubmed",
+        "shape": [
+          19717,
+          32
+        ],
+        "exact_features": true,
+        "max_abs_difference": 0.0,
+        "relative_l2_difference": 0.0,
+        "labels_equal": true,
+        "adjacency_indices_equal": true,
+        "adjacency_values_equal": true
+      },
+      {
+        "dataset": "Flickr",
+        "shape": [
+          7575,
+          32
+        ],
+        "exact_features": true,
+        "max_abs_difference": 0.0,
+        "relative_l2_difference": 0.0,
+        "labels_equal": true,
+        "adjacency_indices_equal": true,
+        "adjacency_values_equal": true
+      },
+      {
+        "dataset": "Reddit",
+        "shape": [
+          10984,
+          32
+        ],
+        "exact_features": true,
+        "max_abs_difference": 0.0,
+        "relative_l2_difference": 0.0,
+        "labels_equal": true,
+        "adjacency_indices_equal": true,
+        "adjacency_values_equal": true
+      },
+      {
+        "dataset": "YelpChi",
+        "shape": [
+          23831,
+          32
+        ],
+        "exact_features": true,
+        "max_abs_difference": 0.0,
+        "relative_l2_difference": 0.0,
+        "labels_equal": true,
+        "adjacency_indices_equal": true,
+        "adjacency_values_equal": true
+      },
+      {
+        "dataset": "ACM",
+        "shape": [
+          16484,
+          32
+        ],
+        "exact_features": true,
+        "max_abs_difference": 0.0,
+        "relative_l2_difference": 0.0,
+        "labels_equal": true,
+        "adjacency_indices_equal": true,
+        "adjacency_values_equal": true
+      },
+      {
+        "dataset": "Amazon",
+        "shape": [
+          10224,
+          32
+        ],
+        "exact_features": true,
+        "max_abs_difference": 0.0,
+        "relative_l2_difference": 0.0,
+        "labels_equal": true,
+        "adjacency_indices_equal": true,
+        "adjacency_values_equal": true
+      },
+      {
+        "dataset": "BlogCatalog",
+        "shape": [
+          5196,
+          32
+        ],
+        "exact_features": true,
+        "max_abs_difference": 0.0,
+        "relative_l2_difference": 0.0,
+        "labels_equal": true,
+        "adjacency_indices_equal": true,
+        "adjacency_values_equal": true
+      },
+      {
+        "dataset": "citeseer",
+        "shape": [
+          3327,
+          32
+        ],
+        "exact_features": true,
+        "max_abs_difference": 0.0,
+        "relative_l2_difference": 0.0,
+        "labels_equal": true,
+        "adjacency_indices_equal": true,
+        "adjacency_values_equal": true
+      },
+      {
+        "dataset": "cora",
+        "shape": [
+          2708,
+          32
+        ],
+        "exact_features": true,
+        "max_abs_difference": 0.0,
+        "relative_l2_difference": 0.0,
+        "labels_equal": true,
+        "adjacency_indices_equal": true,
+        "adjacency_values_equal": true
+      },
+      {
+        "dataset": "Facebook",
+        "shape": [
+          1081,
+          32
+        ],
+        "exact_features": true,
+        "max_abs_difference": 0.0,
+        "relative_l2_difference": 0.0,
+        "labels_equal": true,
+        "adjacency_indices_equal": true,
+        "adjacency_values_equal": true
+      },
+      {
+        "dataset": "weibo",
+        "shape": [
+          8405,
+          32
+        ],
+        "exact_features": true,
+        "max_abs_difference": 0.0,
+        "relative_l2_difference": 0.0,
+        "labels_equal": true,
+        "adjacency_indices_equal": true,
+        "adjacency_values_equal": true
+      }
+    ],
+    "two_cpu_batches_loss_and_gradients": [
+      {
+        "step": 0,
+        "memory_counts_before_batch": [
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "archived_loss": 0.3594803512096405,
+        "released_loss": 0.3594803512096405,
+        "exact_loss": true,
+        "gradient_mismatches": [],
+        "max_gradient_difference": 0.0
+      },
+      {
+        "step": 1,
+        "memory_counts_before_batch": [
+          3,
+          3,
+          3,
+          3,
+          3
+        ],
+        "archived_loss": 0.3605290949344635,
+        "released_loss": 0.3605290949344635,
+        "exact_loss": true,
+        "gradient_mismatches": [],
+        "max_gradient_difference": 0.0
+      }
+    ]
+  }
+}

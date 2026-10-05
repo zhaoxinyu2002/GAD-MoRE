@@ -1,0 +1,40 @@
+{
+  "trials": 1,
+  "epochs_per_trial": 40,
+  "implementation": "archived GRACE+pre",
+  "log_sha256": "690d8c3e35651d5fe9e02c2d5b541488e9ab4ba1b0348ad56a68eac0cde7f3e6",
+  "datasets": {
+    "ACM": {
+      "AUROC": 0.8106908517114011,
+      "AUPRC": 0.37154499866925544
+    },
+    "Amazon": {
+      "AUROC": 0.7961024275157105,
+      "AUPRC": 0.3958146515394696
+    },
+    "BlogCatalog": {
+      "AUROC": 0.7328935185185185,
+      "AUPRC": 0.3490889184376321
+    },
+    "citeseer": {
+      "AUROC": 0.8976896443185395,
+      "AUPRC": 0.37055662033899833
+    },
+    "cora": {
+      "AUROC": 0.8626400833984884,
+      "AUPRC": 0.44351378749759235
+    },
+    "Facebook": {
+      "AUROC": 0.7461363636363637,
+      "AUPRC": 0.0914933154277121
+    },
+    "weibo": {
+      "AUROC": 0.9107476846940653,
+      "AUPRC": 0.605987936334655
+    }
+  },
+  "average_over_seven_targets": {
+    "AUROC": 0.8224143676847266,
+    "AUPRC": 0.37542860403504497
+  }
+}

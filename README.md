@@ -41,6 +41,11 @@ GAD-MoRE/
 
 The four Python source files are the frozen implementation corresponding to the released experimental code. The reference result CSVs are preserved under `results32/`.
 
+Five complete 40-epoch trials with the pinned environment and `--w_message 0`
+achieved mean AUROC **0.8187** and AUPRC **0.3647** across seven targets
+(reference: 0.8209 / 0.3696). See the [measured reproduction audit](docs/reproducibility.md)
+for per-dataset deviations and the archived-code validation.
+
 ## Environment
 
 Use an isolated **Linux x86_64 / Python 3.11.6** environment. The core versions recovered from the original container are:
@@ -100,7 +105,7 @@ From the repository root, run:
 python main.py --trials 5 --w_message 0
 ```
 
-Use `--w_message 0` for the historical training objective: the archived training entry point associated with the reference results did not pass the later-added `max_message` loss to the model. The released code defaults to `--w_message 1.0`; this change alone produced substantially lower results in the environment audit. If `params/` is absent, `main.py` uses the default model configuration below. See [`docs/reproducibility.md`](docs/reproducibility.md) for the evidence and the status of the five-trial verification.
+Keep `--w_message 0` explicit: the archived `GRACE+pre` implementation accompanying the reference result CSVs does not include this additional loss, whereas the released command-line default is 1.0. Runs with the released default produced substantially lower scores even in the recovered original environment. If `params/` is absent, `main.py` uses the default model configuration below. See [`docs/reproducibility.md`](docs/reproducibility.md) for the measured results and archived-code comparison.
 
 The main experimental settings used by the release include:
 
@@ -174,4 +179,3 @@ If you use this code, please cite our paper:
 ```
 
 The IEEE proceedings BibTeX will replace the preprint entry after the ICDM 2026 publication metadata is available.
-
